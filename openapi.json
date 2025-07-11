@@ -1,0 +1,330 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Course Selection API",
+    "version": "1.0.0",
+    "description": "API for managing courses and instructors in a student course selection system."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api"
+    }
+  ],
+  "paths": {
+    "/courses": {
+      "get": {
+        "summary": "Get list of courses with instructor info",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 2
+            },
+            "description": "Max number of results to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of courses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CourseWithInstructor"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new course",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Course created successfully"
+          }
+        }
+      }
+    },
+    "/courses/{courseId}": {
+      "put": {
+        "summary": "Update a course",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "courseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Course updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a course",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "courseId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Course deleted"
+          }
+        }
+      }
+    },
+    "/instructors": {
+      "get": {
+        "summary": "Get list of instructors",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 2
+            },
+            "description": "Max number of results to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of instructors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Instructor"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new instructor",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstructorInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Instructor created successfully"
+          }
+        }
+      }
+    },
+    "/instructors/{instructorId}/courses": {
+      "get": {
+        "summary": "Get list of courses taught by instructor",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "instructorId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 2
+            },
+            "description": "Max number of results to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of courses taught by the instructor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Course"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Instructor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "InstructorInput": {
+        "type": "object",
+        "required": ["name", "email"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "string",
+            "pattern": "^\\d{4}$",
+            "example": "1300"
+          },
+          "endTime": {
+            "type": "string",
+            "pattern": "^\\d{4}$",
+            "example": "1500"
+          },
+          "instructorId": {
+            "type": "string"
+          }
+        }
+      },
+      "CourseInput": {
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "startTime",
+          "endTime",
+          "instructorId"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "string",
+            "pattern": "^\\d{4}$"
+          },
+          "endTime": {
+            "type": "string",
+            "pattern": "^\\d{4}$"
+          },
+          "instructorId": {
+            "type": "string"
+          }
+        }
+      },
+      "CourseWithInstructor": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Course"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "instructor": {
+                "$ref": "#/components/schemas/Instructor"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

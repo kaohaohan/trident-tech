@@ -1,0 +1,10 @@
+# 忽略 node modules
+node_modules/
+
+
+# 忽略 macOS 系統檔
+.DS_Store
+
+
+
+
