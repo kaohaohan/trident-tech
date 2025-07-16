@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    <form id="loginForm">
+      <input name="email" placeholder="email" required /><br />
+      <input
+        name="password"
+        type="password"
+        placeholder="password"
+        required
+      /><br />
+
+      <label for="role">Role:</label><br />
+      <select name="role" required>
+        <option value="student">Student</option>
+        <option value="instructor">Instructor</option></select
+      ><br /><br />
+
+      <button>Login</button>
+    </form>
+
+    <script>
+      document.getElementById("loginForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const body = Object.fromEntries(new FormData(e.target));
+
+        const r = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        if (!r.ok) return alert("login failed");
+
+        const { token } = await r.json();
+        localStorage.setItem("token", token);
+        alert(
+          "✅ 恭喜登入成功！\n🔐 Token 已儲存到 Local Storage\n➡️ 現在將導向 API 文件頁面"
+        );
+        location.href = "/api-docs";
+      };
+    </script>
+  </body>
+</html>
