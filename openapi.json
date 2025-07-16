@@ -23,8 +23,56 @@
           }
         },
         "responses": {
-          "201": { "description": "User created" },
-          "409": { "description": "Email already exists" }
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "role": {
+                      "type": "string",
+                      "enum": ["student", "instructor"]
+                    }
+                  },
+                  "required": ["id", "role"]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": {
+                      "type": "string",
+                      "example": "Email already registered"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": {
+                      "type": "string",
+                      "example": "role must be student or instructor"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -97,6 +145,11 @@
       },
       "post": {
         "summary": "Create a new course",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -120,6 +173,38 @@
                     }
                   },
                   "required": ["id"]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not an instructor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Only the an instructor could create a course"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
                 }
               }
             }
@@ -157,7 +242,60 @@
         },
         "responses": {
           "200": {
-            "description": "Course updated successfully"
+            "description": "Course updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Course" }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not the course owner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Only the owner of the class can update the course"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Course not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Course not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -262,7 +400,21 @@
         },
         "responses": {
           "201": {
-            "description": "Instructor created successfully"
+            "description": "Instructor created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "64cc98c0df5e0b002e6023f9"
+                    }
+                  },
+                  "required": ["id"]
+                }
+              }
+            }
           }
         }
       }

@@ -54,12 +54,18 @@ exports.getOne = async (req, res, next) => {
 // POST /courses
 exports.createOne = async (req, res, next) => {
   try {
+    if (req.user.role !== "instructor")
+      return res
+        .status(403)
+        .json({ message: "Only the an instructor could create a course" });
+
     const doc = await Course.create(req.body);
     res.status(201).json({ id: doc.id });
   } catch (err) {
     next(err);
   }
 };
+
 // DELETE /courses/:courseId
 exports.deleteOne = async (req, res, next) => {
   const course = await Course.findOne({ _id: req.params.courseId });
@@ -81,17 +87,31 @@ exports.deleteOne = async (req, res, next) => {
 //update
 exports.updateOne = async (req, res) => {
   try {
+    const course = await Course.findOne({ _id: req.params.courseId });
+    if (course.instructorId.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ message: "Only the owner of the class can update the course" });
+    }
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
     const updatedCourse = await Course.findByIdAndUpdate(
       req.params.courseId,
       req.body,
       { new: true }
     );
 
-    if (!updatedCourse) {
-      return res.status(404).json({ message: "Course not found" });
-    }
-
-    res.json(updatedCourse);
+    return res.json({
+      id: updatedCourse._id.toString(),
+      title: updatedCourse.title,
+      description: updatedCourse.description,
+      startTime: updatedCourse.startTime,
+      endTime: updatedCourse.endTime,
+      instructorId: updatedCourse.instructorId.toString(),
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

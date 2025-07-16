@@ -34,6 +34,7 @@ exports.signup = async (req, res, next) => {
 // POST /auth/login
 exports.login = async (req, res, next) => {
   try {
+    const { role, email, password } = req.body;
     // 根據 role 選對的 model
     let Model;
     if (role === "student") Model = Student;
