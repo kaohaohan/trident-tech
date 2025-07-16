@@ -28,12 +28,13 @@
       <button>Login</button>
     </form>
 
+    <script src="/config.js"></script>
     <script>
       document.getElementById("loginForm").onsubmit = async (e) => {
         e.preventDefault();
         const body = Object.fromEntries(new FormData(e.target));
 
-        const r = await fetch("/api/auth/login", {
+        const r = await fetch(`${window.ENV.API_BASE_URL}/api/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
