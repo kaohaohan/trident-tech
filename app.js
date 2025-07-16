@@ -23,11 +23,6 @@ app.use(
 );
 
 /* -------- routes -------- */
-// app.get("/", (req, res) => {
-//   res.send(
-//     "Hi! 我是高浩瀚! 謝謝三宏科技給我這次機會面試 ! Please visit /api-docs for the OpenAPI UI."
-//   );
-// });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiDoc));
 

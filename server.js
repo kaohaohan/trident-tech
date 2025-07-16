@@ -6,8 +6,10 @@ mongoose
   .connect(process.env.DB_URL)
   .then(() => {
     console.log("MongoDB connected");
-    app.listen(process.env.PORT || 3000, () =>
-      console.log("Server running on 3000")
-    );
+    // 啟動 Express 應用程式，監聽 Render 指定的 PORT（或預設 10000）
+    // host 必須綁定在 '0.0.0.0'，Render 才能從外部訪問這個服務
+    app.listen(process.env.PORT || 10000, "0.0.0.0", () => {
+      console.log("Server is running...");
+    });
   })
   .catch(console.error);
