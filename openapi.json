@@ -83,27 +83,76 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/LoginInput" }
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "JWT token",
+            "description": "JWT token and user role",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": { "token": { "type": "string" } }
+                  "properties": {
+                    "token": { "type": "string" },
+                    "role": {
+                      "type": "string",
+                      "enum": ["student", "instructor"]
+                    }
+                  },
+                  "required": ["token", "role"]
                 }
               }
             }
           },
-          "401": { "description": "Invalid credentials" }
+          "400": {
+            "description": "Invalid role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": { "type": "string", "example": "Invalid role" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "msg": {
+                      "type": "string",
+                      "example": "Invalid credentials"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Unexpected error" }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
-
     "/courses": {
       "get": {
         "summary": "Get list of courses with instructor info",
