@@ -63,9 +63,13 @@ before(async () => {
   // create TOKEN
   TOKEN =
     "Bearer " +
-    jwt.sign({ id: instructorAId, role: "instrutor" }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    jwt.sign(
+      { id: instructorAId, role: "instructor" },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 });
 
 after(async () => {
