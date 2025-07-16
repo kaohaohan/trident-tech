@@ -10,12 +10,52 @@
       "url": "http://localhost:3000/api"
     }
   ],
-  "security": [
-    {
-      "BearerAuth": []
-    }
-  ],
   "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignupInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "409": { "description": "Email already exists" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login and get JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JWT token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "token": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+
     "/courses": {
       "get": {
         "summary": "Get list of courses with instructor info",
@@ -69,7 +109,20 @@
         },
         "responses": {
           "201": {
-            "description": "Course created successfully"
+            "description": "Course created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["id"]
+                }
+              }
+            }
           }
         }
       }
@@ -77,6 +130,11 @@
     "/courses/{courseId}": {
       "put": {
         "summary": "Update a course",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -105,6 +163,11 @@
       },
       "delete": {
         "summary": "Delete a course",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -116,8 +179,27 @@
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "Course deleted"
+          },
+          "204": {
+            "description": "Course does not exist"
+          },
+          "403": {
+            "description": "Forbidden - Only the owner can delete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "message": "Only the owner of the class can delete the course"
+                }
+              }
+            }
           }
         }
       }
@@ -163,6 +245,11 @@
       },
       "post": {
         "summary": "Create a new instructor",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -329,8 +416,28 @@
             }
           }
         ]
+      },
+      "SignupInput": {
+        "type": "object",
+        "required": ["name", "email", "password", "role"],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password" },
+          "role": { "type": "string", "enum": ["student", "instructor"] }
+        }
+      },
+      "LoginInput": {
+        "type": "object",
+        "required": ["email", "password", "role"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password" },
+          "role": { "type": "string", "enum": ["student", "instructor"] }
+        }
       }
     },
+
     "securitySchemes": {
       "BearerAuth": {
         "type": "http",
