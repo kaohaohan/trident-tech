@@ -14,8 +14,6 @@ exports.createOne = async (req, res, next) => {
 // GET /instructors  講師清單
 exports.getAll = async (req, res, next) => {
   try {
-    console.log("reqQuery:", req.query);
-
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 2;
 
